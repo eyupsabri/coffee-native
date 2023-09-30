@@ -1,4 +1,4 @@
-import { useEffect,useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,7 +8,9 @@ import {
   TouchableOpacity,
 } from "react-native";
 import axios from "axios";
-import { useIsFocused,useFocusEffect } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
+import { AuthContext } from "../context/auth.context";
+import { AuthContextType } from "../@types/User";
 
 import { Product, Paging } from "../@types/Product";
 import SimpleMenu from "../components/simple.menu.component";
@@ -21,7 +23,8 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 type ProductsPageProps = NativeStackScreenProps<ProductsStackParamList, "ProductsScreen">
 
 
-const ProductsScreen = ({navigation, route}: ProductsPageProps) => {
+const ProductsScreen = ({ navigation, route }: ProductsPageProps) => {
+  const { setAuthStateHelper } = useContext(AuthContext) as AuthContextType
 
   const isFocused = useIsFocused();
   // const catId = route.params?.categoryId ? route.params.categoryId : "1" ;
@@ -29,26 +32,31 @@ const ProductsScreen = ({navigation, route}: ProductsPageProps) => {
   const catName = route.params.categoryName;
 
   const onPressDetailsHandler = (pr: Product) => {
-    navigation.navigate("ProductDetailView", {product: pr})
-  } 
+    navigation.navigate("ProductDetailView", { product: pr })
+  }
 
   // navigation.replace("ProductsScreen",{categoryId: catId, categoryName: catName});
   const [products, setProducts] = useState<Product[] | null>(null);
 
   useEffect(() => {
-    
-    const inner = async() => {
-      const res = await axios.get<Paging>("http://10.0.2.2:7198/api/Products/products?categoryId=" + catId,{
-        headers: {
-          Accept: 'application/json',
-        },
-      },);     
-      setProducts(res.data.dtos);   
-      console.log("products screen useEffect" )   
-      console.log(res.data.dtos?.at(0))
+
+    const inner = async () => {
+      try {
+        const res = await axios.get<Paging>("http://10.0.2.2:7198/api/Products/products?categoryId=" + catId, {
+          headers: {
+            Accept: 'application/json',
+          },
+        },);
+        setProducts(res.data.dtos);
+        console.log("products screen useEffect")
+        console.log(res.data.dtos?.at(0))
+      } catch (e) {
+        setAuthStateHelper('error')
+      }
+
     }
     isFocused && inner();
-  },[isFocused])
+  }, [isFocused])
 
   // useFocusEffect(() => {
   //   const inner = async() => {
@@ -64,8 +72,8 @@ const ProductsScreen = ({navigation, route}: ProductsPageProps) => {
   //   inner();
   // })
 
-  return(
-  
+  return (
+
     <View style={styles.container}>
       <View style={styles.body}>
         <FlatList
@@ -77,18 +85,18 @@ const ProductsScreen = ({navigation, route}: ProductsPageProps) => {
               <TouchableOpacity>
                 <View style={styles.box}>
                   <Image style={styles.image} source={{ uri: `http://10.0.2.2:7198/assets/products/${item.ImageGuid}.jpg` }} />
-                  <Text style={styles.username}>{item.ProductName}</Text>           
+                  <Text style={styles.username}>{item.ProductName}</Text>
                   <View style={styles.iconContent}>
-                    <SimpleMenu onPressDetailsHandler={onPressDetailsHandler} product={item}/>
+                    <SimpleMenu onPressDetailsHandler={onPressDetailsHandler} product={item} />
                   </View>
-                </View>           
+                </View>
               </TouchableOpacity>
             )
           }}
         />
       </View>
     </View>
-  
+
   )
 }
 

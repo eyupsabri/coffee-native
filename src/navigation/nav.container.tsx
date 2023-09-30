@@ -12,13 +12,13 @@ interface Props {
   // any props that come into the component
 }
 
-export default function NavContainer() {
-  const {authState} = useContext(AuthContext) as AuthContextType
-  return (   
-      <NavigationContainer>
-         {(authState?.authenticated) ? 
-         <MyDrawer /> 
-          : <LoginStack /> }  
-      </NavigationContainer>  
+export default function NavContainer({ }: Props) {
+  const { authState } = useContext(AuthContext) as AuthContextType
+  return (
+    <NavigationContainer>
+      {(authState?.authenticated) ?
+        <MyDrawer />
+        : <LoginStack />}
+    </NavigationContainer>
   );
 }
