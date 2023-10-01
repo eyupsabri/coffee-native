@@ -1,43 +1,42 @@
-import { Text, Alert } from "react-native";
+import { Text } from "react-native";
 import { DrawerItem } from "@react-navigation/drawer"
-import { useState } from "react";
-import { useNavigation } from '@react-navigation/native';
+import { useState, useContext, useEffect } from "react";
 
-import { LayoutAnimation, StyleSheet, TouchableOpacity, View } from "react-native";
+
+import { LayoutAnimation, StyleSheet, TouchableOpacity, UIManager } from "react-native";
 import Icon from 'react-native-vector-icons/Ionicons';
 import { ArrangedMenu } from "../@types/Category";
+import { DrawerIds, DrawerContextType } from "../@types/Drawer";
+import { DrawerContext } from "../context/drawer.context";
+
+if (UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
 
 type Props = {
   menu: ArrangedMenu;
+  onPressHandler: (title: string, Ids: DrawerIds) => void
+  
 }
 
 const Accordion = (props: Props) => {
-  
+  const {Ids} = useContext(DrawerContext) as DrawerContextType
   const [isOpen, setIsOpen] = useState(false);
-  const {menu} = props;
+  const {menu, onPressHandler} = props;
 
   const toggleOpen = () => {
     console.log(menu)
+    LayoutAnimation.configureNext(LayoutAnimation.create(400, 'easeInEaseOut', 'opacity'));
     setIsOpen(!isOpen); 
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
   }
 
-  // if(!isOpen){
-  //   return <DrawerItem onPress= {() => toggleOpen} style = {styles.heading} 
-  //        icon={() => <Icon name={isOpen ? "chevron-up-outline" : "chevron-down-outline"} color="black" size={18}/>}
-  //        label={menu?.Title}
-  //      /> 
-  // }else {
-  //   menu?.children.map(c => {
-  //     <DrawerItem label= {c.Title} onPress={() => Alert.alert("cemre")}/>
-  //   })
-  // }
-
-
-
-  // label={menu.Title}>
-  // icon={() => <Icon name={!isOpen ? "chevron-up-outline" : "chevron-down-outline"} color="black" size={18}/>}
-
+  useEffect(() => {
+    if(Ids?.parentId === menu.Id)
+      setIsOpen(true)
+    else
+      setIsOpen(false)
+  },[Ids])
 
   return (
     <>
@@ -46,10 +45,15 @@ const Accordion = (props: Props) => {
           <Icon name={isOpen ? "chevron-up-outline" : "chevron-down-outline"} color="black" size={18}/>
       </TouchableOpacity>
   
-      {menu.children.map(c => (
-        <DrawerItem key={c.Id} style={[styles.list, !isOpen ? styles.hidden : undefined]}  label= {c.Title} onPress={() => Alert.alert("cemre")} />
-      ))}
-      
+      {/* {menu.children.map(c => (
+        <DrawerItem key={c.Id} style={[styles.list, !isOpen ? styles.hidden : undefined]}  label= {c.Title} onPress={() => onPressHandler(c.Title, {parentId: menu.Id, childId: c.Id})} />
+      ))} */}
+      {isOpen && menu.children.map(c => {
+        if(Ids?.childId === c.Id)
+          return <DrawerItem key={c.Id} style={styles.selected}  label= {c.Title} onPress={() => onPressHandler(c.Title, {parentId: menu.Id, childId: c.Id})} />
+        return <DrawerItem key={c.Id}  label= {c.Title} onPress={() => onPressHandler(c.Title, {parentId: menu.Id, childId: c.Id})} />
+        }  
+      )}
     </>
     
   );
@@ -78,8 +82,8 @@ const styles = StyleSheet.create({
   hidden: {
     height: 0,
   },
-  list: {
-    overflow: 'hidden'
+  selected: {
+    backgroundColor: "#007FFF"
   },
   sectionTitle: {
     fontSize: 16,

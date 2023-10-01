@@ -6,6 +6,7 @@ import MyDrawer from "./drawer.stack";
 
 import { AuthContext } from "../context/auth.context";
 import { AuthContextType } from "../@types/User";
+import { DrawerContextProvider } from "../context/drawer.context";
 
 interface Props {
   children?: ReactNode
@@ -16,9 +17,10 @@ export default function NavContainer({ }: Props) {
   const { authState } = useContext(AuthContext) as AuthContextType
   return (
     <NavigationContainer>
-      {(authState?.authenticated) ?
-        <MyDrawer />
-        : <LoginStack />}
+      {(authState?.authenticated) ? (
+        <DrawerContextProvider>
+          <MyDrawer />
+        </DrawerContextProvider>) : <LoginStack />}
     </NavigationContainer>
   );
 }

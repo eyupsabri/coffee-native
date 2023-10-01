@@ -1,25 +1,30 @@
-import { useState, useEffect } from "react"
-import { StyleSheet,View, Text, Alert } from "react-native"
-import { DrawerContentScrollView, DrawerItemList, DrawerItem } from "@react-navigation/drawer"
-import { useNavigation } from "@react-navigation/native"
+import { useState, useEffect, useContext } from "react"
+import { StyleSheet,View} from "react-native"
+import { DrawerContentScrollView} from "@react-navigation/drawer"
+
 import axios from "axios"
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MenuItem } from "../@types/Category"
 import { ArrangedMenu } from "../@types/Category"
 import Accordion from "./accordion.component"
+import { DrawerIds } from "../@types/Drawer";
+import { DrawerContext } from "../context/drawer.context";
+import { DrawerContextType } from "../@types/Drawer";
 
-import { DrawerScreenProps } from '@react-navigation/drawer';
-import { DrawerStackParamList } from "../navigation/drawer.stack"
-
-type DrawerProps = DrawerScreenProps<DrawerStackParamList, "DummyScreen">
 
 const CustomDrawer = (props : any) => {
-  const navigation = useNavigation<DrawerProps>().navigation;
+  const {navigation} = props;
+  const {setDrawerId} = useContext(DrawerContext) as DrawerContextType
 
   const [menuItems, setMenuItems] = useState<ArrangedMenu[] | null>(null);
+
+  const onPressNavigate = (title: string, Ids: DrawerIds) => {
+    setDrawerId({...Ids})
+    navigation.navigate("DummyTwoScreen", {title: title})
+  }
+
+  
 
   useEffect(() => {
     console.log("drawer stack effect")
@@ -30,8 +35,7 @@ const CustomDrawer = (props : any) => {
           Accept: 'application/json',
         },
       },);     
-       
-       
+             
       let children : MenuItem[] = new Array;
       let arranged  = new Map<number, ArrangedMenu>();
 
@@ -39,24 +43,14 @@ const CustomDrawer = (props : any) => {
         if(m.ParentMenuItemId)
           children.push(m)
         else  
-        arranged.set(m.Id,{Id: m.Id, Title: m.Title, children: new Array})
+          arranged.set(m.Id,{Id: m.Id, Title: m.Title, children: new Array})
       })
            
       children.map(c => {        
         if(c.ParentMenuItemId)
           arranged.get(c.ParentMenuItemId)?.children.push(c);
-      })
-      const cemo = Array.from(arranged.values());
-      cemo.map(c => {
-        console.log()
-        console.log(c)
-        
-        console.log(c.children)
-        console.log()
-      })
-      
-      setMenuItems(Array.from(arranged.values()));
-      
+      }) 
+      setMenuItems(Array.from(arranged.values()));   
     }
     inner();
   },[])
@@ -64,7 +58,7 @@ const CustomDrawer = (props : any) => {
 
 
   return (
-    <SafeAreaProvider>
+    <DrawerContentScrollView {...props}>
     <SafeAreaView style={styles.safeArea}>
      {/* <DrawerItemList {...props} />  */}
       
@@ -75,7 +69,7 @@ const CustomDrawer = (props : any) => {
 
       {menuItems?.map(m => 
         <View key={m.Id} style={styles.container}>    
-          <Accordion menu={m}/>  
+          <Accordion menu={m} onPressHandler={onPressNavigate} />  
           <View style={{alignItems: 'center'}} >
             <View style={styles.divider} />
           </View>
@@ -89,7 +83,7 @@ const CustomDrawer = (props : any) => {
         menu={menuItems?.get(1)}
       /> */}
     </SafeAreaView>
-    </SafeAreaProvider>
+    </DrawerContentScrollView>
   )
   
 
