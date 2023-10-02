@@ -6,5 +6,8 @@ export type DrawerIds = {
 
 export type DrawerContextType = {
   Ids : DrawerIds | null
-  setDrawerId: (Ids: DrawerIds | null ) => void
+  setDrawerId: (Ids: DrawerIds | null) => void;
+
+  isHomePage: boolean;
+  setIsHomePageHelper: (isIt: boolean) => void;
 }

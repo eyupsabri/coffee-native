@@ -1,6 +1,6 @@
-import { useState, useEffect, useContext } from "react"
+import { useState, useEffect } from "react"
 import { StyleSheet,View} from "react-native"
-import { DrawerContentScrollView} from "@react-navigation/drawer"
+import { DrawerContentScrollView, DrawerItem} from "@react-navigation/drawer"
 
 import axios from "axios"
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,22 +9,24 @@ import { MenuItem } from "../@types/Category"
 import { ArrangedMenu } from "../@types/Category"
 import Accordion from "./accordion.component"
 import { DrawerIds } from "../@types/Drawer";
-import { DrawerContext } from "../context/drawer.context";
-import { DrawerContextType } from "../@types/Drawer";
+
+
 
 
 const CustomDrawer = (props : any) => {
+  
   const {navigation} = props;
-  const {setDrawerId} = useContext(DrawerContext) as DrawerContextType
+  // const {setDrawerId, isHomePage} = useContext(DrawerContext) as DrawerContextType
+  const [Ids, setIds] = useState<DrawerIds | null>(null)
+  const [isHomePage, setIsHomePage] = useState(true);
 
   const [menuItems, setMenuItems] = useState<ArrangedMenu[] | null>(null);
 
   const onPressNavigate = (title: string, Ids: DrawerIds) => {
-    setDrawerId({...Ids})
+    setIsHomePage(false);
+    setIds({...Ids})
     navigation.navigate("DummyTwoScreen", {title: title})
   }
-
-  
 
   useEffect(() => {
     console.log("drawer stack effect")
@@ -59,36 +61,33 @@ const CustomDrawer = (props : any) => {
 
   return (
     <DrawerContentScrollView {...props}>
-    <SafeAreaView style={styles.safeArea}>
-     {/* <DrawerItemList {...props} />  */}
-      
-      {/* <View>
-        <DrawerItem label={"cemre"} onPress={() => Alert.alert("zaaaa")}/>
-      </View>
-      <DrawerItem label={"cemre"} onPress={() => Alert.alert("zaaaa")}/> */}
+      <SafeAreaView style={styles.safeArea}>
 
+      {isHomePage ? 
+        <DrawerItem label={"Home Page"} focused onPress={() => {
+          setIds(null)
+          setIsHomePage(true);     
+          navigation.navigate("DummyScreen")}}
+        /> : 
+        <DrawerItem label={"Home Page"}  onPress={() => {     
+          setIds(null) 
+          setIsHomePage(true);   
+          navigation.navigate("DummyScreen")}} />
+      } 
+           
       {menuItems?.map(m => 
         <View key={m.Id} style={styles.container}>    
-          <Accordion menu={m} onPressHandler={onPressNavigate} />  
+          <Accordion menu={m} onPressHandler={onPressNavigate} Ids={Ids} isHomePage={isHomePage}/>  
           <View style={{alignItems: 'center'}} >
             <View style={styles.divider} />
           </View>
         </View>
       )}
-
-
-      {/* <Accordion
-        label="Help"
-        // onPress={() => navigation.navigate("DummyScreen")}
-        menu={menuItems?.get(1)}
-      /> */}
-    </SafeAreaView>
+  
+      </SafeAreaView>
     </DrawerContentScrollView>
   )
   
-
-
-
 }
 
 export default CustomDrawer

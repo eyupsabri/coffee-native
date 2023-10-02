@@ -5,6 +5,14 @@ import { DrawerStackParamList } from "../navigation/drawer.stack";
 type ProductsPageProps = DrawerScreenProps<DrawerStackParamList, "DummyScreen">
 
 const DummyScreen = ({navigation, route} : ProductsPageProps) => {
+  // const isFocused = useIsFocused();
+  // const {setIsHomePageHelper} = useContext(DrawerContext) as DrawerContextType
+
+
+  // useEffect(()=> {
+  //   isFocused && setIsHomePageHelper(true)
+  // },[isFocused])
+
   return <Text>dummy</Text>
 }
 

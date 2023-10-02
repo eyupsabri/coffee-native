@@ -1,13 +1,13 @@
 import { Text } from "react-native";
-import { DrawerItem } from "@react-navigation/drawer"
-import { useState, useContext, useEffect } from "react";
+import { DrawerItem, useDrawerStatus } from "@react-navigation/drawer"
+import { useState, useEffect } from "react";
 
 
 import { LayoutAnimation, StyleSheet, TouchableOpacity, UIManager } from "react-native";
 import Icon from 'react-native-vector-icons/Ionicons';
 import { ArrangedMenu } from "../@types/Category";
-import { DrawerIds, DrawerContextType } from "../@types/Drawer";
-import { DrawerContext } from "../context/drawer.context";
+import { DrawerIds } from "../@types/Drawer";
+
 
 if (UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -17,26 +17,39 @@ if (UIManager.setLayoutAnimationEnabledExperimental) {
 type Props = {
   menu: ArrangedMenu;
   onPressHandler: (title: string, Ids: DrawerIds) => void
-  
+  Ids: DrawerIds | null
+  isHomePage: boolean
 }
 
 const Accordion = (props: Props) => {
-  const {Ids} = useContext(DrawerContext) as DrawerContextType
+  // const {Ids, isHomePage} = useContext(DrawerContext) as DrawerContextType
   const [isOpen, setIsOpen] = useState(false);
-  const {menu, onPressHandler} = props;
+  const {menu, onPressHandler, isHomePage, Ids} = props;
+  const isDrawerOpen = useDrawerStatus() === 'open';
 
   const toggleOpen = () => {
-    console.log(menu)
+    
     LayoutAnimation.configureNext(LayoutAnimation.create(400, 'easeInEaseOut', 'opacity'));
     setIsOpen(!isOpen); 
   }
 
   useEffect(() => {
-    if(Ids?.parentId === menu.Id)
-      setIsOpen(true)
-    else
-      setIsOpen(false)
-  },[Ids])
+    if(isDrawerOpen){
+      if(!isHomePage){
+        console.log("okeyto")
+        Ids?.parentId === menu.Id ? setIsOpen(true) : setIsOpen(false)    
+      }else{
+        setIsOpen(false);
+      }
+    }
+  },[isDrawerOpen])
+
+  // useEffect(() => {
+  //   if(Ids?.parentId === menu.Id)
+  //     setIsOpen(true)
+  //   else
+  //     setIsOpen(false)
+  // },[Ids])
 
   return (
     <>

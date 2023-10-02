@@ -17,7 +17,6 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const LoginStack = () => {
-  // const {authState} = useContext(AuthContext) as AuthContextType
   return(   
     <Stack.Navigator initialRouteName="LoginScreen">    
         <Stack.Screen name="LoginScreen" component={LoginScreen}  options={{title: "Login"}}/>              
