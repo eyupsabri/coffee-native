@@ -30,30 +30,6 @@ export default function LoginScreen({}: LoginProps) {
            
   }
 
-  // useMemo(
-  //   () => {
-  //     if(authState?.authenticated)
-  //        navigation.navigate("FirstPage");
-  //     else
-  //         console.log("login deki memo")
-  //   },[authState?.authenticated]);
-
-
-  // useEffect(() => {
-  //   // console.log("cemre")
-  //   // axios({
-  //   //   method:'get',
-  //   //   url:"https://192.168.1.105:45455/api/Login/Logout"
-  //   // }).then(response => console.log(response))
-  //   const inner = async() => {
-  //     console.log("cemre")
-  //     const res = await fetch("http://10.0.2.2:7198/api/Login/Logout", {method: "GET"})
-      
-  //     console.log(res);
-  //   }
-  //   inner();
-  // },[])
-
   return (
    
     <View style={styles.container}>

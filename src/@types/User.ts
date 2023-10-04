@@ -12,6 +12,6 @@ export type AuthState = {
 export type AuthContextType = {
   authState: AuthState | null;
   register:(user: UserLogin) => void;
-  setAuthStateHelper: (authToken: string) => void;
+  //setAuthStateHelper: (authToken: string) => void;
 }
 

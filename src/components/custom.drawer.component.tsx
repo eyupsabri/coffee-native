@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { StyleSheet,View} from "react-native"
 import { DrawerContentScrollView, DrawerItem} from "@react-navigation/drawer"
 
-import axios from "axios"
+import { getData } from "../utils/data.utils";
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MenuItem } from "../@types/Category"
@@ -25,34 +25,29 @@ const CustomDrawer = (props : any) => {
   const onPressNavigate = (title: string, Ids: DrawerIds) => {
     setIsHomePage(false);
     setIds({...Ids})
-    navigation.navigate("DummyTwoScreen", {title: title})
+    navigation.navigate("DummyTwoScreen", {title: title, setIds: setIds, setIsHomePage: setIsHomePage})
   }
 
   useEffect(() => {
-    console.log("drawer stack effect")
     const inner = async() => {
+      const res = await getData<MenuItem[]>("http://10.0.2.2:7198/api/Categories/dummycategories");               
+      if(res){
+        let children : MenuItem[] = new Array;
+        let arranged  = new Map<number, ArrangedMenu>();
 
-      const res = await axios.get<MenuItem[]>("http://10.0.2.2:7198/api/Categories/dummycategories",{
-        headers: {
-          Accept: 'application/json',
-        },
-      },);     
+        res.forEach(m => {
+          if(m.ParentMenuItemId)
+            children.push(m)
+          else  
+            arranged.set(m.Id,{Id: m.Id, Title: m.Title, children: new Array})
+        })
              
-      let children : MenuItem[] = new Array;
-      let arranged  = new Map<number, ArrangedMenu>();
-
-      res.data.forEach(m => {
-        if(m.ParentMenuItemId)
-          children.push(m)
-        else  
-          arranged.set(m.Id,{Id: m.Id, Title: m.Title, children: new Array})
-      })
-           
-      children.map(c => {        
-        if(c.ParentMenuItemId)
-          arranged.get(c.ParentMenuItemId)?.children.push(c);
-      }) 
-      setMenuItems(Array.from(arranged.values()));   
+        children.map(c => {        
+          if(c.ParentMenuItemId)
+            arranged.get(c.ParentMenuItemId)?.children.push(c);
+        }) 
+        setMenuItems(Array.from(arranged.values())); 
+      }      
     }
     inner();
   },[])
@@ -65,13 +60,13 @@ const CustomDrawer = (props : any) => {
 
       {isHomePage ? 
         <DrawerItem label={"Home Page"} focused onPress={() => {
-          setIds(null)
-          setIsHomePage(true);     
+           setIds(null)
+           setIsHomePage(true);     
           navigation.navigate("DummyScreen")}}
         /> : 
         <DrawerItem label={"Home Page"}  onPress={() => {     
-          setIds(null) 
-          setIsHomePage(true);   
+           setIds(null) 
+           setIsHomePage(true);   
           navigation.navigate("DummyScreen")}} />
       } 
            

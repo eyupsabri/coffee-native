@@ -8,12 +8,13 @@ import { Category } from '../@types/Category';
 import CustomDrawer from '../components/custom.drawer.component';
 import { MenuItem } from '../@types/Category';
 import DummyTwoScreen from '../screens/dummy2.screen';
+import { DrawerIds } from '../@types/Drawer';
 
 
 
 export type DrawerStackParamList = {
   DummyScreen: undefined;
-  DummyTwoScreen: {title: string};
+  DummyTwoScreen: {title: string; setIds: (ids: DrawerIds | null) => void; setIsHomePage: (isHomePage: boolean) => void};
 };
 
 const Drawer = createDrawerNavigator<DrawerStackParamList>();

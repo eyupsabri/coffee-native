@@ -27,3 +27,20 @@ export const updateProduct = async(product: Product): Promise<Product> => {
   return res.data;
 
 }
+
+export const getData = async<T>(url: string): Promise<T | null> => {
+  try{
+    const res = await axios.get<T>(url,{
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+    if(res?.data && res)
+      return res.data
+    return null
+  }catch(e){
+    console.log("url" + e);
+    return null
+  }
+  
+}

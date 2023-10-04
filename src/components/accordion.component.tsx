@@ -36,7 +36,7 @@ const Accordion = (props: Props) => {
   useEffect(() => {
     if(isDrawerOpen){
       if(!isHomePage){
-        console.log("okeyto")
+        
         Ids?.parentId === menu.Id ? setIsOpen(true) : setIsOpen(false)    
       }else{
         setIsOpen(false);
@@ -44,12 +44,7 @@ const Accordion = (props: Props) => {
     }
   },[isDrawerOpen])
 
-  // useEffect(() => {
-  //   if(Ids?.parentId === menu.Id)
-  //     setIsOpen(true)
-  //   else
-  //     setIsOpen(false)
-  // },[Ids])
+
 
   return (
     <>
